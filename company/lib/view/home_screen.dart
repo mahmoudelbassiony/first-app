@@ -47,7 +47,7 @@ class HomeScreen extends StatelessWidget {
 
               GestureDetector(
        onTap: (){
-        Get.to(ContractDetailsPage('Property Contract'));
+        Get.to(ContractDetailsScreen('Property Contract'));
        },
                   child: Container(
                     width: 250,

@@ -1,13 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class FireStoreProperty{
+class SavedFireStoreProperty{
 
-  final CollectionReference _propertyCollectionRef = FirebaseFirestore.instance.collection('Staff Properties');
-
+  final _propertyCollectionRef = FirebaseFirestore.instance.collectionGroup('user savings');
+  
 Future<List<QueryDocumentSnapshot>> getPropertiess()async{
   var value = await _propertyCollectionRef.get();
   return value.docs;
 }
-
-  getcontract() {}
 }

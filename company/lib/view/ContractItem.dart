@@ -3,16 +3,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class ContractDetailsPage extends StatefulWidget {
+class ContractDetailsScreen extends StatefulWidget {
   final String contractTitle;
 
-  ContractDetailsPage(this.contractTitle);
+  ContractDetailsScreen(this.contractTitle);
 
   @override
-  _ContractDetailsPageState createState() => _ContractDetailsPageState();
+  _ContractDetailsScreenState createState() => _ContractDetailsScreenState();
 }
 
-class _ContractDetailsPageState extends State<ContractDetailsPage> {
+class _ContractDetailsScreenState extends State<ContractDetailsScreen> {
   String sellerName = '';
   String sellerIdCard = '';
   String sellerResidence = '';

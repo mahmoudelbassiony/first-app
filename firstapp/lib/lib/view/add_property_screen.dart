@@ -4,23 +4,6 @@ import 'package:firstapp/view/components/add_property_data.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:io';
-import 'package:image_picker/image_picker.dart';
-
-// Inside your add property screen
-final imagePicker = ImagePicker();
-Future<void> getImage() async {
-  final pickedFile = await imagePicker.pickImage(source: ImageSource.gallery);
-
-  if (pickedFile != null) {
-    // Upload the picked image to Firebase Storage
-    // and save the image URL in Firestore or Realtime Database
-    // You can use the pickedFile.path to get the local path of the image
-  } else {
-    print('No image selected.');
-  }
-}
-
-
 class AddPropertyScreen extends StatelessWidget {
 
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
@@ -256,5 +239,4 @@ class AddPropertyScreen extends StatelessWidget {
         ,
     );
   }
-  
 }

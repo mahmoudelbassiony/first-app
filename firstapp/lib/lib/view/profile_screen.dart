@@ -1,8 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firstapp/constance.dart';
 import 'package:firstapp/controller/profile_controller.dart';
-
-import 'package:firstapp/controller/profile_controller.dart';
+import 'package:firstapp/lib/view/contract_screen.dart';
 import 'package:firstapp/view/add_property_screen.dart';
 import 'package:firstapp/view/auth/login_screen.dart';
 import 'package:firstapp/view/components/profile_list_item.dart';
@@ -22,7 +21,6 @@ class ProfileScreen extends StatelessWidget {
 
   @override 
   Widget build(BuildContext context) {
-    
 
     // ScreenUtil.init(context, designSize: Size(414, 896), scaleByHeight: true);
 

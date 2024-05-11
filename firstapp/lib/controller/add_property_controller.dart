@@ -1,30 +1,28 @@
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firstapp/controller/profile_controller.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
-class AddPropertyController extends GetxController{
+import '../model/user_model.dart';
 
+class AddPropertyController extends GetxController {
+  late ProfileController _profileController;
+  late UserModel _userModel;
   String? id, locationn, area, type, paymentType, amenty, noOfRooms, noOfBaths, price, downPayment, installmentValue, description;
-  
-  // String userPhone = ProfileController().userModel.phone.toString();
-
-  // String userEmail = ProfileController().userModel.email.toString();
-
-  // String userPhone = Get.find<ProfileController>().userModel.phone.toString();
-  String userEmail = Get.find<ProfileController>().userModel.email.toString();
-  
-
-  var image;
-
   List<XFile> imageList = [];
-
   final imagePicker = ImagePicker();
+  CollectionReference properties = FirebaseFirestore.instance.collection('Assessor Properties');
 
   @override
   void onInit() {
     super.onInit();
+    _profileController = Get.find<ProfileController>();
+    // Call the initializeUserModel method when the controller is initialized
+    initializeUserModel();
   }
 
   @override
@@ -37,70 +35,56 @@ class AddPropertyController extends GetxController{
     super.onClose();
   }
 
-  Future<void> uploadImage() async{
-
-    final List<XFile>? selectedImages = await imagePicker.pickMultiImage();
-    
-    imageList.addAll(selectedImages!);
-    update();
-
-    // if(selectedImages!.isNotEmpty){
-    //   imageList.addAll(selectedImages);
-    // }
-    // else{}
-
-    // var pickedImage = await imagePicker.pickImage(source: ImageSource.gallery);
-
-    // if(pickedImage != null){
-    //     image = File(pickedImage.path);
-    // }
-    // else{}
+  // Initialize the user model asynchronously
+  Future<void> initializeUserModel() async {
+    _userModel = await _profileController.getUserModel();
   }
 
-  CollectionReference properties = FirebaseFirestore.instance.collection('Assessor Properties');
-  Future<void> addProperty() {
-      return properties
-          .add({
-            'Location': locationn, 
-            'area': area, 
-            'type': type ,
-            'price': price,
-            'number of rooms':noOfRooms,
-            'number of baths': noOfBaths,
-            'Amenties': amenty,
-            'payment type': paymentType,
-            'down payment': downPayment,
-            'installment value': installmentValue,
-            'description': description,
-            'user email': userEmail
-            // 'broker phone': brokerPhone,
-            // 'broker email': brokerEmail
-          })
-          .then((value) => print("User Added"))
-          .catchError((error) => print("Failed to add user: $error"));
+  Future<void> uploadImage() async {
+    final List<XFile>? selectedImages = await imagePicker.pickMultiImage();
+    imageList.addAll(selectedImages!);
+    update();
+  }
+
+  Future<void> addProperty() async {
+    try {
+      await properties.add({
+        'Location': locationn,
+        'area': area,
+        'type': type,
+        'price': price,
+        'number of rooms': noOfRooms,
+        'number of baths': noOfBaths,
+        'Amenties': amenty,
+        'payment type': paymentType,
+        'down payment': downPayment,
+        'installment value': installmentValue,
+        'description': description,
+        'user email': _userModel.email // Access the user email from the initialized UserModel
+      });
+      print("Property Added Successfully");
+    } catch (error) {
+      print("Failed to add property: $error");
     }
+  }
 
+  File? pickedImageProfile;
+  String? imageUrlFromFirebase;
 
-//---------------------------------------------------------------------------------------------------------------------------
-  // var isLoading = false;
+  Future<void> pickImageProfile(ImageSource source) async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: source, imageQuality: 80);
+    if (pickedFile != null) {
+      pickedImageProfile = File(pickedFile.path);
+      await saveImagePickerInFirebase();
+    }
+  }
 
-  // var propertyList = <PropertyModel>[];
+  Future<void> saveImagePickerInFirebase() async {
+    final user = FirebaseAuth.instance.currentUser!.uid;
+    final Reference storageRef = FirebaseStorage.instance.ref().child('user_images').child('$user.jpg');
 
-  // Future<void> getData()async{
-
-  //   try{
-  //     QuerySnapshot properties = await FirebaseFirestore.instance.collection('Properties').get();
-
-  //     propertyList.clear();
-
-  //     for(var property in properties.docs){
-  //       propertyList.add(PropertyModel(property.id, property['location'], property['area'], property['type'], property['number of rooms'], property['number of baths'], property['amenties'], property['payment type'], property['down payment'], property['installment value']));
-  //     }
-  //     isLoading = false;
-
-  //   }catch(e){
-  //       Get.snackbar('error', '${e.toString()}');
-  //   }
-  // }
-
+    await storageRef.putFile(pickedImageProfile!);
+    imageUrlFromFirebase = await storageRef.getDownloadURL();
+  }
 }
